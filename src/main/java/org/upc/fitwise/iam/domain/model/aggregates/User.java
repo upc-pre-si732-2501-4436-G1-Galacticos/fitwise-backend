@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import org.upc.fitwise.profiles.domain.model.aggregates.Profile;
 import org.upc.fitwise.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
 import java.util.HashSet;
@@ -30,6 +31,10 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+    @Getter
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Profile profile;
 
     public User() {
         this.roles = new HashSet<>();
