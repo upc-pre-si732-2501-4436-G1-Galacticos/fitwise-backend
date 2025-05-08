@@ -32,9 +32,6 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    @Getter
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Profile profile;
 
     public User() {
         this.roles = new HashSet<>();

@@ -23,10 +23,8 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
     @Getter
     private BigDecimal score;
     @Getter
-    //@MapsId
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private Long user;
+    @Column(name = "user_id", nullable = false, unique = true)
+    private Long userId;
 
     @Getter
     @ManyToOne
@@ -47,7 +45,7 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
         this.weight = weight;
         this.activityLevel = activityLevel;
         this.goal = goal;
-        this.user=userId;
+        this.userId=userId;
     }
 
     public Profile() {
