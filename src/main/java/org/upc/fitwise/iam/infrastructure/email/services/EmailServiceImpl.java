@@ -18,7 +18,7 @@ public class EmailServiceImpl implements EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("Email verification");
-        message.setText("Click this link to verify: http://example.com/verify?token=" + token);
+        message.setText("Click this link to verify: http://localhost:4200/reset-password?token=" + token+"&email=" + email);
         mailSender.send(message);
     }
 }
