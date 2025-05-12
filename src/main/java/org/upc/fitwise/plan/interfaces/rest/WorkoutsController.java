@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.upc.fitwise.plan.domain.model.queries.GetAllWorkoutsQuery;
+import org.upc.fitwise.plan.domain.model.queries.GetWorkoutByIdQuery;
 import org.upc.fitwise.plan.domain.services.WorkoutQueryService;
 import org.upc.fitwise.plan.interfaces.rest.resources.WorkoutResource;
 import org.upc.fitwise.plan.interfaces.rest.transform.WorkoutResourceFromEntityAssembler;
@@ -49,6 +50,22 @@ public class WorkoutsController {
         var getAllWorkoutsQuery = new GetAllWorkoutsQuery();
         var workouts = workoutQueryService.handle(getAllWorkoutsQuery);
         var workoutResource = workouts.stream().map(WorkoutResourceFromEntityAssembler::toResourceFromEntity).toList();
+        return ResponseEntity.ok(workoutResource);
+    }
+
+    /**
+     * Gets a workout by its id.
+     *
+     * @param workoutId the id of the workout to be retrieved
+     * @return the workout resource with the given id
+     * @see WorkoutResource
+     */
+    @GetMapping("/{workoutId}")
+    public ResponseEntity<WorkoutResource> getWorkoutById(@PathVariable Long workoutId) {
+        var getWorkoutByIdQuery = new GetWorkoutByIdQuery(workoutId);
+        var workout = workoutQueryService.handle(getWorkoutByIdQuery);
+        if (workout.isEmpty()) return ResponseEntity.badRequest().build();
+        var workoutResource = WorkoutResourceFromEntityAssembler.toResourceFromEntity(workout.get());
         return ResponseEntity.ok(workoutResource);
     }
 

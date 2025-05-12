@@ -7,12 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.upc.fitwise.plan.domain.model.queries.GetAllFitwisePlansQuery;
 import org.upc.fitwise.plan.domain.model.queries.GetFitwisePlanByIdQuery;
+import org.upc.fitwise.plan.domain.model.queries.GetWorkoutByIdQuery;
 import org.upc.fitwise.plan.domain.services.FitwisePlanCommandService;
 import org.upc.fitwise.plan.domain.services.FitwisePlanQueryService;
 import org.upc.fitwise.plan.interfaces.rest.resources.CreateFitwisePlanResource;
 import org.upc.fitwise.plan.interfaces.rest.resources.FitwisePlanResource;
+import org.upc.fitwise.plan.interfaces.rest.resources.WorkoutResource;
 import org.upc.fitwise.plan.interfaces.rest.transform.CreateFitwisePlanCommandFromResourceAssembler;
 import org.upc.fitwise.plan.interfaces.rest.transform.FitwisePlanResourceFromEntityAssembler;
+import org.upc.fitwise.plan.interfaces.rest.transform.WorkoutResourceFromEntityAssembler;
 
 
 import java.util.List;
@@ -82,6 +85,24 @@ public class FitwisePlansController {
         if (fitwisePlan.isEmpty()) return ResponseEntity.notFound().build();
         var fitwisePlanResource = FitwisePlanResourceFromEntityAssembler.toResourceFromEntity(fitwisePlan.get());
         return new ResponseEntity<>(fitwisePlanResource, HttpStatus.CREATED);
+    }
+
+
+
+    /**
+     * Gets a FitwisePlan by its id.
+     *
+     * @param fitwisePlanId the id of the fitwisePlan to be retrieved
+     * @return the fitwisePlan resource with the given id
+     * @see FitwisePlanResource
+     */
+    @GetMapping("/{fitwisePlanId}")
+    public ResponseEntity<FitwisePlanResource> getFitwisePlanById(@PathVariable Long fitwisePlanId) {
+        var getFitwisePlanByIdQuery = new GetFitwisePlanByIdQuery(fitwisePlanId);
+        var fitwisePlan = fitwisePlanQueryService.handle(getFitwisePlanByIdQuery);
+        if (fitwisePlan.isEmpty()) return ResponseEntity.badRequest().build();
+        var fitwisePlanResource = FitwisePlanResourceFromEntityAssembler.toResourceFromEntity(fitwisePlan.get());
+        return ResponseEntity.ok(fitwisePlanResource);
     }
 
 }

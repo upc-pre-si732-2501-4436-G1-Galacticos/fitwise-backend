@@ -2,20 +2,10 @@ package org.upc.fitwise.profiles.interfaces.rest;
 
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.upc.fitwise.profiles.domain.model.queries.GetProfileByIdQuery;
 import org.upc.fitwise.profiles.domain.services.ProfileCommandService;
 import org.upc.fitwise.profiles.domain.services.ProfileQueryService;
-import org.upc.fitwise.profiles.interfaces.rest.resources.CreateProfileResource;
-import org.upc.fitwise.profiles.interfaces.rest.resources.ProfileResource;
-import org.upc.fitwise.profiles.interfaces.rest.resources.UpdateProfileResource;
-import org.upc.fitwise.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
-import org.upc.fitwise.profiles.interfaces.rest.transform.ProfileResourceFromEntityAssembler;
-import org.upc.fitwise.profiles.interfaces.rest.transform.UpdateProfileCommandFromResourceAssembler;
 
-import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 

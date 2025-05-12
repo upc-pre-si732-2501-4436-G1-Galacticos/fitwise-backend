@@ -3,12 +3,17 @@ package org.upc.fitwise.plan.interfaces.rest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.upc.fitwise.plan.domain.model.queries.GetAllDietsQuery;
+import org.upc.fitwise.plan.domain.model.queries.GetDietByIdQuery;
+import org.upc.fitwise.plan.domain.model.queries.GetWorkoutByIdQuery;
 import org.upc.fitwise.plan.domain.services.DietQueryService;
 import org.upc.fitwise.plan.interfaces.rest.resources.DietResource;
+import org.upc.fitwise.plan.interfaces.rest.resources.WorkoutResource;
 import org.upc.fitwise.plan.interfaces.rest.transform.DietResourceFromEntityAssembler;
+import org.upc.fitwise.plan.interfaces.rest.transform.WorkoutResourceFromEntityAssembler;
 
 import java.util.List;
 
@@ -51,6 +56,23 @@ public class DietsController {
         var getAllDietsQuery = new GetAllDietsQuery();
         var diets = dietQueryService.handle(getAllDietsQuery);
         var dietResource = diets.stream().map(DietResourceFromEntityAssembler::toResourceFromEntity).toList();
+        return ResponseEntity.ok(dietResource);
+    }
+
+
+    /**
+     * Gets a diet by its id.
+     *
+     * @param dietId the id of the diet to be retrieved
+     * @return the diet resource with the given id
+     * @see DietResource
+     */
+    @GetMapping("/{dietId}")
+    public ResponseEntity<DietResource> getDietById(@PathVariable Long dietId) {
+        var getDietByIdQuery = new GetDietByIdQuery(dietId);
+        var diet = dietQueryService.handle(getDietByIdQuery);
+        if (diet.isEmpty()) return ResponseEntity.badRequest().build();
+        var dietResource = DietResourceFromEntityAssembler.toResourceFromEntity(diet.get());
         return ResponseEntity.ok(dietResource);
     }
 

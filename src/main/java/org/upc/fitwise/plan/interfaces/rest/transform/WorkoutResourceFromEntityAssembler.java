@@ -8,6 +8,6 @@ import org.upc.fitwise.plan.interfaces.rest.resources.WorkoutResource;
 
 public class WorkoutResourceFromEntityAssembler {
     public static WorkoutResource toResourceFromEntity(Workout entity) {
-        return new WorkoutResource(entity.getId(),entity.getTitle(), entity.getNote());
+        return new WorkoutResource(entity.getId(),entity.getTitle(), entity.getNote(),entity.getExercises());
     }
 }

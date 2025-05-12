@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.upc.fitwise.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -27,5 +29,18 @@ public class Workout extends AuditableAbstractAggregateRoot<Workout> {
             inverseJoinColumns = @JoinColumn(name = "exercise_id")
     )
     private List<Exercise> exercises;
+
+    public Workout() {
+        this.exercises = new ArrayList<>();
+    }
+
+
+    public void addExercise(Exercise exercise) {
+        exercises.add(exercise);
+    }
+
+
+
+
 
 }
