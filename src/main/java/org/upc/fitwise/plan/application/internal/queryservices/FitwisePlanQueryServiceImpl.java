@@ -63,7 +63,7 @@ public class FitwisePlanQueryServiceImpl implements FitwisePlanQueryService {
         String goalName = externalProfileService.fetchProfileGoalNameByProfileId(query.profileId());
         if (goalName.toLowerCase().contains("perder peso")) {
             recommendedPlanTags.addAll(planTagRepository.findPlanTagsByTitleIn(List.of("Pérdida de Peso")));
-        } else if (goalName.toLowerCase().contains("ganar masa muscular")) {
+        } else if (goalName.toLowerCase().contains("ganar musculo")) {
             recommendedPlanTags.addAll(planTagRepository.findPlanTagsByTitleIn(List.of("Ganancia Muscular")));
         }
 

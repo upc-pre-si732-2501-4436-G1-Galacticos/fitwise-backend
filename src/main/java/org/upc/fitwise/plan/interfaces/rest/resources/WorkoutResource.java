@@ -5,6 +5,6 @@ import org.upc.fitwise.plan.domain.model.aggregates.Exercise;
 
 import java.util.List;
 
-public record WorkoutResource(Long id, String title, String note, List<Exercise> exercises)  {
+public record WorkoutResource(Long id, String title, String description, List<Exercise> exercises)  {
 }
 

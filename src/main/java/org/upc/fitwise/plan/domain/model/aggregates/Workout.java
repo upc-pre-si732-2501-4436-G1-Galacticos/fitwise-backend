@@ -19,7 +19,7 @@ public class Workout extends AuditableAbstractAggregateRoot<Workout> {
     @Getter
     private String title;
     @Getter
-    private String note;
+    private String description;
 
     @Getter
     @Setter
@@ -33,10 +33,26 @@ public class Workout extends AuditableAbstractAggregateRoot<Workout> {
     public Workout() {
         this.exercises = new ArrayList<>();
     }
+    public Workout(String title, String description) {
+        this.title = title;
+        this.description = description;
+        this.exercises = new ArrayList<>();
+    }
+
+
 
 
     public void addExercise(Exercise exercise) {
-        exercises.add(exercise);
+
+        if (!this.exercises.contains(exercise)) {
+            this.exercises.add(exercise);
+        }
+    }
+
+    public void removeExercise(Exercise exercise) {
+        if (this.exercises != null) {
+            this.exercises.remove(exercise);
+        }
     }
 
 

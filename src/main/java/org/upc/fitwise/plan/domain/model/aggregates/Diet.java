@@ -18,8 +18,9 @@ public class Diet extends AuditableAbstractAggregateRoot<Diet> {
 
     @Getter
     private String title;
+
     @Getter
-    private String note;
+    private String description;
 
     @Getter
     @Setter
@@ -33,9 +34,24 @@ public class Diet extends AuditableAbstractAggregateRoot<Diet> {
         this.meals = new ArrayList<>();
     }
 
+    public Diet(String title, String description) {
+        this.title = title;
+        this.description = description;
+        this.meals = new ArrayList<>();
+    }
+
 
     public void addMeal(Meal meal) {
-        meals.add(meal);
+
+        if (!this.meals.contains(meal)) {
+            this.meals.add(meal);
+        }
+    }
+
+    public void removeMeal(Meal meal) {
+        if (this.meals != null) {
+            this.meals.remove(meal);
+        }
     }
 
 }

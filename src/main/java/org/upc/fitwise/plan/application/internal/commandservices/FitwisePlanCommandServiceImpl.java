@@ -2,14 +2,18 @@ package org.upc.fitwise.plan.application.internal.commandservices;
 
 
 import org.springframework.stereotype.Service;
+import org.upc.fitwise.plan.domain.model.aggregates.Diet;
 import org.upc.fitwise.plan.domain.model.aggregates.FitwisePlan;
 import org.upc.fitwise.plan.domain.model.aggregates.PlanTag;
+import org.upc.fitwise.plan.domain.model.aggregates.Workout;
 import org.upc.fitwise.plan.domain.model.commands.AddDietToFitwisePlanCommand;
 import org.upc.fitwise.plan.domain.model.commands.AddWorkoutToFitwisePlanCommand;
 import org.upc.fitwise.plan.domain.model.commands.CreateFitwisePlanCommand;
 import org.upc.fitwise.plan.domain.services.FitwisePlanCommandService;
+import org.upc.fitwise.plan.infrastructure.persistence.jpa.repositories.DietRepository;
 import org.upc.fitwise.plan.infrastructure.persistence.jpa.repositories.FitwisePlanRepository;
 import org.upc.fitwise.plan.infrastructure.persistence.jpa.repositories.PlanTagRepository;
+import org.upc.fitwise.plan.infrastructure.persistence.jpa.repositories.WorkoutRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +24,13 @@ public class FitwisePlanCommandServiceImpl implements FitwisePlanCommandService 
 
     private final FitwisePlanRepository fitwisePlanRepository;
     private final PlanTagRepository planTagRepository;
-
-
-    public FitwisePlanCommandServiceImpl(FitwisePlanRepository fitwisePlanRepository,PlanTagRepository planTagRepository){
+    private final WorkoutRepository workoutRepository;
+    private final DietRepository dietRepository;
+    public FitwisePlanCommandServiceImpl(FitwisePlanRepository fitwisePlanRepository,PlanTagRepository planTagRepository,WorkoutRepository workoutRepository,DietRepository dietRepository){
         this.fitwisePlanRepository=fitwisePlanRepository;
         this.planTagRepository=planTagRepository;
+        this.workoutRepository=workoutRepository;
+        this.dietRepository=dietRepository;
     }
 
 
@@ -63,7 +69,9 @@ public class FitwisePlanCommandServiceImpl implements FitwisePlanCommandService 
         }
         try {
             fitwisePlanRepository.findById(command.fitwisePlanId()).map(fitwisePlan -> {
-                fitwisePlan.setWorkoutId(command.workoutId());
+                Workout workout = workoutRepository.findById(command.workoutId())
+                        .orElseThrow(() -> new IllegalArgumentException("Workout does not exist"));
+                fitwisePlan.setWorkout(workout);
                 fitwisePlanRepository.save(fitwisePlan);
                 System.out.println("Workout added to fitwisePlan");
                 return fitwisePlan;
@@ -85,7 +93,9 @@ public class FitwisePlanCommandServiceImpl implements FitwisePlanCommandService 
         }
         try {
             fitwisePlanRepository.findById(command.fitwisePlanId()).map(fitwisePlan -> {
-                fitwisePlan.setDietId(command.dietId());
+                Diet diet = dietRepository.findById(command.dietId())
+                        .orElseThrow(() -> new IllegalArgumentException("Diet does not exist"));
+                fitwisePlan.setDiet(diet);
                 fitwisePlanRepository.save(fitwisePlan);
                 System.out.println("Diet added to fitwisePlan");
                 return fitwisePlan;

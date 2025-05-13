@@ -7,6 +7,6 @@ import org.upc.fitwise.plan.interfaces.rest.resources.DietResource;
 
 public class DietResourceFromEntityAssembler {
     public static DietResource toResourceFromEntity(Diet entity) {
-        return new DietResource(entity.getId(),entity.getTitle(),entity.getNote(),entity.getMeals());
+        return new DietResource(entity.getId(),entity.getTitle(),entity.getDescription(),entity.getMeals());
     }
 }

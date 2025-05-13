@@ -7,6 +7,6 @@ import org.upc.fitwise.plan.domain.model.aggregates.PlanTag;
 import java.util.List;
 
 
-public record FitwisePlanResource(Long id,String title, Long dietId, Long workoutId, String note, List<String>  tagNames) {
+public record FitwisePlanResource(Long id,String title, Long dietId, Long workoutId, String description, List<String>  tagNames) {
 }
 
