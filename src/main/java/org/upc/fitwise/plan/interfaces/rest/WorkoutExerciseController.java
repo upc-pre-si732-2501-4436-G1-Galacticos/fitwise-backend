@@ -29,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * </p>
  */
 @RestController
-@RequestMapping(value = "/workouts/{workoutId}/exercises", produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/workouts/{workoutId}/exercises", produces = APPLICATION_JSON_VALUE)
 @Tag(name = "Workouts")
 public class WorkoutExerciseController {
     private final WorkoutQueryService workoutQueryService;

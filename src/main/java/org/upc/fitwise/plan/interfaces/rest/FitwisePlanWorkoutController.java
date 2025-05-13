@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * </p>
  */
 @RestController
-@RequestMapping(value = "/fitwise-plans/{fitwisePlanId}/workouts", produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/fitwise-plans/{fitwisePlanId}/workouts", produces = APPLICATION_JSON_VALUE)
 @Tag(name = "Fitwise plans")
 public class FitwisePlanWorkoutController {
     private final FitwisePlanQueryService fitwisePlanQueryService;

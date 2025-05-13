@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * </p>
  */
 @RestController
-@RequestMapping(value = "/diets/{dietId}/meals", produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/diets/{dietId}/meals", produces = APPLICATION_JSON_VALUE)
 @Tag(name = "Diets")
 public class DietMealController {
     private final DietQueryService dietQueryService;
