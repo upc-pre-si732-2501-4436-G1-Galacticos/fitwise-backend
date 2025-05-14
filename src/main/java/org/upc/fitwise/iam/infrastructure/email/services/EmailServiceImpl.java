@@ -4,6 +4,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.upc.fitwise.iam.application.internal.outboundservices.email.EmailService;
+import org.upc.fitwise.iam.domain.model.valueobjects.VerificationType;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -14,11 +15,18 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendPasswordResetEmail(String email, String token) {
+    public void sendCodeToEmail(String email, String token, VerificationType verificationType) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
-        message.setSubject("Email verification");
-        message.setText("Click this link to verify: http://localhost:4200/reset-password?token=" + token+"&email=" + email);
+        if(verificationType == VerificationType.SIGN_IN){
+            message.setSubject("Email verification");
+            message.setText("Hello your token for sesion is " + token+"&email=" + email);
+        }
+        if(verificationType == VerificationType.PASSWORD_RESET){
+            message.setSubject("Email verification");
+            message.setText("Click this link to verify: http://localhost:4200/reset-password?token=" + token+"&email=" + email);
+        }
+
         mailSender.send(message);
     }
 }
