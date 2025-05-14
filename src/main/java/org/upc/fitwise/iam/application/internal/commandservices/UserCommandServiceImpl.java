@@ -80,7 +80,7 @@ public class UserCommandServiceImpl implements UserCommandService {
                         command.email(), LocalDateTime.now());
 
         if (existingToken.isPresent()) {
-            throw new RuntimeException("Token not expired");
+            throw new RuntimeException("Link isntruction not expired");
         }
         EmailVerification newEmailVerification = new EmailVerification(user.get().getEmail());
         emailVerificationRepository.save(newEmailVerification);
