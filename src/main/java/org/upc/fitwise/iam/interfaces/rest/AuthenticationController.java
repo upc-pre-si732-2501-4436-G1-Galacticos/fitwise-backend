@@ -3,12 +3,10 @@ package org.upc.fitwise.iam.interfaces.rest;
 import jakarta.validation.Valid;
 import org.upc.fitwise.iam.domain.model.commands.ForgotPasswordCommand;
 import org.upc.fitwise.iam.domain.model.commands.ResetPasswordCommand;
+import org.upc.fitwise.iam.domain.model.commands.SignInCommand;
 import org.upc.fitwise.iam.domain.services.UserCommandService;
 import org.upc.fitwise.iam.interfaces.rest.resources.*;
-import org.upc.fitwise.iam.interfaces.rest.transform.AuthenticatedUserResourceFromEntityAssembler;
-import org.upc.fitwise.iam.interfaces.rest.transform.SignInCommandFromResourceAssembler;
-import org.upc.fitwise.iam.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
-import org.upc.fitwise.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
+import org.upc.fitwise.iam.interfaces.rest.transform.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.upc.fitwise.shared.interfaces.rest.resources.MessageResource;
-
+import org.upc.fitwise.iam.interfaces.rest.resources.VerifySignInResource;
 /**
  * AuthenticationController
  * <p>
@@ -40,20 +38,30 @@ public class AuthenticationController {
         this.userCommandService = userCommandService;
     }
 
+
+    @PostMapping("/sign-in")
+    public ResponseEntity<MessageResource> signIn(@Valid @RequestBody SignInResource signInResource) {
+        var signInCommand = new SignInCommand(signInResource.email(), signInResource.password());
+        userCommandService.handle(signInCommand);
+        return ResponseEntity.ok(new MessageResource("Please verify your email " + signInResource.email()));
+    }
+
+
     /**
-     * Handles the sign-in request.
-     * @param signInResource the sign-in request body.
+     * Handles the sign-in-two-factor request.
+     * @param verifySignInResource the sign-in-two-factor request body.
      * @return the authenticated user resource.
      */
-    @PostMapping("/sign-in")
-    public ResponseEntity<AuthenticatedUserResource> signIn(@Valid @RequestBody SignInResource signInResource) {
-        var signInCommand = SignInCommandFromResourceAssembler.toCommandFromResource(signInResource);
-        var authenticatedUser = userCommandService.handle(signInCommand);
+    @PostMapping("/sign-in-two-factor")
+    public ResponseEntity<AuthenticatedUserResource> signIn(@Valid @RequestBody VerifySignInResource verifySignInResource) {
+        var verifySignInCommand = VerifySignInCommandFromResourceAssembler.toCommandFromResource(verifySignInResource);
+        var authenticatedUser = userCommandService.handle(verifySignInCommand);
         if (authenticatedUser.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.toResourceFromEntity(authenticatedUser.get().getLeft(), authenticatedUser.get().getRight());
         return ResponseEntity.ok(authenticatedUserResource);
+
     }
 
     /**
@@ -81,7 +89,7 @@ public class AuthenticationController {
     public ResponseEntity<MessageResource>forgotPassword(@Valid @RequestBody ForgotPasswordResource forgotPasswordResource) {
         var forgotPasswordCommand = new ForgotPasswordCommand(forgotPasswordResource.email());
         userCommandService.handle(forgotPasswordCommand);
-        return ResponseEntity.ok(new MessageResource("Instrucciones enviadas al correo siguiente " + forgotPasswordResource.email()));
+        return ResponseEntity.ok(new MessageResource("Please verify your email " + forgotPasswordResource.email()));
     }
     /**
      * Handles the reset-password request.
@@ -90,7 +98,7 @@ public class AuthenticationController {
      */
     @PostMapping("/reset-password")
     public ResponseEntity<MessageResource> resetPassword(@Valid @RequestBody ResetPasswordResource resetPasswordResource) {
-        var resetPasswordCommand = new ResetPasswordCommand(resetPasswordResource.email(), resetPasswordResource.password(),resetPasswordResource.token());
+        var resetPasswordCommand = new ResetPasswordCommand(resetPasswordResource.email(), resetPasswordResource.password(),resetPasswordResource.verificationCode());
         userCommandService.handle(resetPasswordCommand);
         return ResponseEntity.ok(new MessageResource("Contraseña actualizada del correo " + resetPasswordResource.email()));
 
