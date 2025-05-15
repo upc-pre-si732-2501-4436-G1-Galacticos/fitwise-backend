@@ -5,11 +5,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.upc.fitwise.iam.application.internal.outboundservices.email.EmailService;
 import org.upc.fitwise.iam.domain.model.valueobjects.VerificationType;
-
+import org.springframework.beans.factory.annotation.Value;
 @Service
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
-
+    @Value("${frontend.url}")
+    private String frontendUrl;
     public EmailServiceImpl(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
@@ -24,7 +25,9 @@ public class EmailServiceImpl implements EmailService {
         }
         if(verificationType == VerificationType.PASSWORD_RESET){
             message.setSubject("Email verification");
-            message.setText("Click this link to verify: http://localhost:4200/reset-password?token=" + token+"&email=" + email);
+            message.setText("Click this link to reset your password: "
+                    + frontendUrl + "/reset-password?token=" + token + "&email=" + email);
+
         }
 
         mailSender.send(message);
