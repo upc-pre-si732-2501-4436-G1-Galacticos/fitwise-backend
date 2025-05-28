@@ -2,12 +2,14 @@ package org.upc.fitwise.profiles.domain.model.aggregates;
 
 import lombok.Getter;
 import org.upc.fitwise.iam.domain.model.aggregates.User;
+import org.upc.fitwise.plan.domain.model.aggregates.FitwisePlan;
 import org.upc.fitwise.profiles.domain.model.valueobjects.PersonName;
 import  org.upc.fitwise.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 @Entity
 public class Profile extends AuditableAbstractAggregateRoot<Profile> {
@@ -36,6 +38,10 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
     @ManyToOne
     @JoinColumn(name = "goal_id", nullable = false)
     private Goal goal;
+
+    @Getter
+    @OneToMany(mappedBy = "fitwise_plans", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FitwisePlan> fitwisePlan;
 
 
 

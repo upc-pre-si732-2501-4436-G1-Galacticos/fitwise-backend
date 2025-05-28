@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.upc.fitwise.profiles.domain.model.aggregates.Profile;
 import org.upc.fitwise.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
 import java.math.BigDecimal;
@@ -32,17 +33,22 @@ public class FitwisePlan extends AuditableAbstractAggregateRoot<FitwisePlan> {
     @Setter
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
-            name = "plan_plan_tag", // Nombre de la tabla de unión (puedes personalizarlo)
-            joinColumns = @JoinColumn(name = "fitwise_plan_id"),
-            inverseJoinColumns = @JoinColumn(name = "plan_tag_id")
+        name = "plan_plan_tag", // Nombre de la tabla de unión (puedes personalizarlo)
+        joinColumns = @JoinColumn(name = "fitwise_plan_id"),
+        inverseJoinColumns = @JoinColumn(name = "plan_tag_id")
     )
     private List<PlanTag> tags = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     @Getter
     private String title;
 
     @Getter
     private String description;
+
 
 
 
