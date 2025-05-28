@@ -39,6 +39,7 @@ public class FitwisePlan extends AuditableAbstractAggregateRoot<FitwisePlan> {
     )
     private List<PlanTag> tags = new ArrayList<>();
 
+    @Getter
     @ManyToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;
