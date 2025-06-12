@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface GoalRepository extends JpaRepository<Goal, Long> {
+    boolean existsByGoalName(String title);
 }

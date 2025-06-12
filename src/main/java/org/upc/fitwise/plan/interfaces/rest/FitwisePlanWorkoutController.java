@@ -3,18 +3,18 @@ package org.upc.fitwise.plan.interfaces.rest;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 import org.upc.fitwise.plan.domain.model.commands.AddWorkoutToFitwisePlanCommand;
+import org.upc.fitwise.plan.domain.model.commands.RemoveWorkoutToFitwisePlanCommand;
 import org.upc.fitwise.plan.domain.model.queries.GetFitwisePlanByIdQuery;
 import org.upc.fitwise.plan.domain.model.queries.GetFitwisePlanByWorkoutIdQuery;
 import org.upc.fitwise.plan.domain.services.FitwisePlanCommandService;
 import org.upc.fitwise.plan.domain.services.FitwisePlanQueryService;
 import org.upc.fitwise.plan.interfaces.rest.resources.FitwisePlanResource;
-import org.upc.fitwise.plan.interfaces.rest.resources.WorkoutResource;
 import org.upc.fitwise.plan.interfaces.rest.transform.FitwisePlanResourceFromEntityAssembler;
+
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -47,11 +47,31 @@ public class FitwisePlanWorkoutController {
      * @see FitwisePlanResource
      */
     @PostMapping("{workoutId}")
-    public ResponseEntity<FitwisePlanResource> addWorkoutToFitwisePlan(@PathVariable Long fitwisePlanId, @PathVariable Long workoutId) {
-        fitwisePlanCommandService.handle(new AddWorkoutToFitwisePlanCommand(fitwisePlanId, workoutId));
-        var getFitwisePlanByWorkoutIdQuery = new GetFitwisePlanByWorkoutIdQuery(workoutId);
-        var fitwisePlan = fitwisePlanQueryService.handle(getFitwisePlanByWorkoutIdQuery);
-        if (fitwisePlan.isEmpty()) return ResponseEntity.notFound().build();
+    public ResponseEntity<FitwisePlanResource> addWorkoutToFitwisePlan(@PathVariable Long fitwisePlanId, @PathVariable Long workoutId, @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        fitwisePlanCommandService.handle(new AddWorkoutToFitwisePlanCommand(fitwisePlanId, workoutId,username));
+        var getFitwisePlanByIdQuery = new GetFitwisePlanByIdQuery(fitwisePlanId);
+        var fitwisePlan = fitwisePlanQueryService.handle(getFitwisePlanByIdQuery);
+        if (fitwisePlan.isEmpty()) return ResponseEntity.badRequest().build();
+        var fitwisePlanResource = FitwisePlanResourceFromEntityAssembler.toResourceFromEntity(fitwisePlan.get());
+        return ResponseEntity.ok(fitwisePlanResource);
+    }
+
+
+    /**
+     * Remove a workout to the fitwisePlan.
+     * @param fitwisePlanId The fitwisePlan identifier.
+     * @param workoutId The workout identifier.
+     * @return the fitwisePlan
+     * @see FitwisePlanResource
+     */
+    @DeleteMapping("{workoutId}")
+    public ResponseEntity<FitwisePlanResource>removeWorkoutToFitwisePlan(@PathVariable Long fitwisePlanId, @PathVariable Long workoutId, @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        fitwisePlanCommandService.handle(new RemoveWorkoutToFitwisePlanCommand(fitwisePlanId, workoutId,username));
+        var getFitwisePlanByIdQuery = new GetFitwisePlanByIdQuery(fitwisePlanId);
+        var fitwisePlan = fitwisePlanQueryService.handle(getFitwisePlanByIdQuery);
+        if (fitwisePlan.isEmpty()) return ResponseEntity.badRequest().build();
         var fitwisePlanResource = FitwisePlanResourceFromEntityAssembler.toResourceFromEntity(fitwisePlan.get());
         return ResponseEntity.ok(fitwisePlanResource);
     }

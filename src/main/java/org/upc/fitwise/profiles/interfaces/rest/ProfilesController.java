@@ -29,7 +29,6 @@ public class ProfilesController {
     private final ProfileQueryService profileQueryService;
     private final ProfileCommandService profileCommandService;
 
-
     public ProfilesController(ProfileQueryService profileQueryService, ProfileCommandService profileCommandService) {
         this.profileQueryService = profileQueryService;
         this.profileCommandService = profileCommandService;

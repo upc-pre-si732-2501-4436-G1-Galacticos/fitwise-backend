@@ -48,25 +48,11 @@ public class FitwisePlanQueryServiceImpl implements FitwisePlanQueryService {
 
     @Override
     public List<FitwisePlan> handle(GetFitwisePlansRecomendedByProfileIdQuery query) {
-
-
         List<PlanTag> recommendedPlanTags = new ArrayList<>();
-
-        String activityLevelName = externalProfileService.fetchProfileActivityLevelNameByProfileId(query.profileId());
-        if (activityLevelName.equalsIgnoreCase("Sedentario")) {
-            recommendedPlanTags.addAll(planTagRepository.findPlanTagsByTitleIn(List.of("Principiante", "Bajo Impacto")));
-        } else if (activityLevelName.equalsIgnoreCase("Activo")) {
-            recommendedPlanTags.addAll(planTagRepository.findPlanTagsByTitleIn(List.of("Intermedio", "Cardio", "Fuerza")));
-        }
-
-
-        String goalName = externalProfileService.fetchProfileGoalNameByProfileId(query.profileId());
-        if (goalName.toLowerCase().contains("perder peso")) {
-            recommendedPlanTags.addAll(planTagRepository.findPlanTagsByTitleIn(List.of("Pérdida de Peso")));
-        } else if (goalName.toLowerCase().contains("ganar musculo")) {
-            recommendedPlanTags.addAll(planTagRepository.findPlanTagsByTitleIn(List.of("Ganancia Muscular")));
-        }
-
+        List<String> activityLevelTags = externalProfileService.fetchProfileActivityLevelTagsByProfileId(query.profileId());
+        List<String> goalTags = externalProfileService.fetchProfileGoalTagsByProfileId(query.profileId());
+        recommendedPlanTags.addAll(planTagRepository.findPlanTagsByTitleIn(activityLevelTags));
+        recommendedPlanTags.addAll(planTagRepository.findPlanTagsByTitleIn(goalTags));
         return fitwisePlanRepository.findFitwisePlansByTagsIn(recommendedPlanTags.stream().distinct().toList());
     }
 

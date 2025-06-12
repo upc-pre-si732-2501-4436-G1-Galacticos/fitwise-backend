@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface PlanTagRepository extends JpaRepository<PlanTag, Long> {
     Optional<PlanTag> findByTitle(String title);
     List<PlanTag> findPlanTagsByTitleIn(List<String> title);
+    boolean existsByTitle(String title);
 }

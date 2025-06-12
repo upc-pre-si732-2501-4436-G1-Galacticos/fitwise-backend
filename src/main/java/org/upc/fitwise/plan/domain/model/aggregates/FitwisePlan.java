@@ -18,31 +18,28 @@ import java.util.stream.Collectors;
 public class FitwisePlan extends AuditableAbstractAggregateRoot<FitwisePlan> {
 
     @Getter
-    @Setter
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "diet_id", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "diet_id")
     private Diet diet;
 
     @Getter
-    @Setter
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "workout_id", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "workout_id")
     private Workout workout;
 
-    @Getter
     @Setter
+    @Getter
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
-        name = "plan_plan_tag", // Nombre de la tabla de unión (puedes personalizarlo)
+        name = "plan_plan_tag",
         joinColumns = @JoinColumn(name = "fitwise_plan_id"),
         inverseJoinColumns = @JoinColumn(name = "plan_tag_id")
     )
     private List<PlanTag> tags = new ArrayList<>();
 
     @Getter
-    @ManyToOne
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
+    @Setter
+    private Long userId;
 
     @Getter
     private String title;
@@ -68,6 +65,22 @@ public class FitwisePlan extends AuditableAbstractAggregateRoot<FitwisePlan> {
                     .collect(Collectors.toList());
         }
         return new ArrayList<>();
+    }
+
+    public void assignWorkout(Workout workout) {
+        this.workout = workout;
+    }
+
+    public void removeWorkout() {
+        this.workout = null;
+    }
+
+    public void assignDiet(Diet diet) {
+        this.diet = diet;
+    }
+
+    public void removeDiet() {
+        this.diet = null;
     }
 
 

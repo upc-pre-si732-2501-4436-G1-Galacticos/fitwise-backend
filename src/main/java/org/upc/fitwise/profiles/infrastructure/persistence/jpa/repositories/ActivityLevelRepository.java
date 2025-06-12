@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ActivityLevelRepository extends JpaRepository<ActivityLevel, Long> {
+    boolean existsByLevelName(String title);
 }

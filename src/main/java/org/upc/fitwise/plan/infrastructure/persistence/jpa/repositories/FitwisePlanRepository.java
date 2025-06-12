@@ -14,10 +14,11 @@ public interface FitwisePlanRepository extends JpaRepository<FitwisePlan, Long> 
     Optional<FitwisePlan> findByTitle(String title);
     Optional<FitwisePlan> findById(Long fitwisePlanId);
     Optional<FitwisePlan> findByWorkoutId(Long workoutId);
-    boolean existsByWorkoutId(Long workoutId);
-    boolean existsByDietId(Long dietId);
     Optional<FitwisePlan> findByDietId(Long dietId);
     List<FitwisePlan> findFitwisePlansByTagsIn(List<PlanTag> tags);
+    boolean existsByUserIdAndTitle(Long userId, String title);
+
+
 
 
 
