@@ -170,16 +170,5 @@ public class FitwisePlanExceptionHandler {
         return new MessageResource(ex.getMessage());
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public MessageResource handleGenericRuntimeException(RuntimeException ex) {
-        return new MessageResource("An unexpected error occurred: " + ex.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public MessageResource handleAllOtherExceptions(Exception ex) {
-        return new MessageResource("An unhandled server error occurred.");
-    }
 
 }
