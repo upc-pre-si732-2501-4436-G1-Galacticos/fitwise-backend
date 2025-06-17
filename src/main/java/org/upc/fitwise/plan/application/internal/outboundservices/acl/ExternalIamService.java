@@ -37,4 +37,8 @@ public class ExternalIamService {
         return Optional.of(userId);
     }
 
+    public boolean existsUserById(Long userId) {
+        return iamContextFacade.existsUserById(userId);
+    }
+
 }
