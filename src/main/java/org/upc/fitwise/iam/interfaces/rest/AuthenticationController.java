@@ -53,7 +53,7 @@ public class AuthenticationController {
      * @return the authenticated user resource.
      */
     @PostMapping("/sign-in-two-factor")
-    public ResponseEntity<AuthenticatedUserResource> signIn(@Valid @RequestBody VerifySignInResource verifySignInResource) {
+    public ResponseEntity<AuthenticatedUserResource> signIn(@RequestBody VerifySignInResource verifySignInResource) {
         var verifySignInCommand = VerifySignInCommandFromResourceAssembler.toCommandFromResource(verifySignInResource);
         var authenticatedUser = userCommandService.handle(verifySignInCommand);
         if (authenticatedUser.isEmpty()) {

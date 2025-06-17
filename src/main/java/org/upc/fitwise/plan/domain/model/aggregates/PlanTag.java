@@ -16,10 +16,6 @@ public class PlanTag extends AuditableAbstractAggregateRoot<PlanTag> {
 
 
     @Getter
-    @Setter
-    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    private List<FitwisePlan> plans = new ArrayList<>();
-    @Getter
     private String title;
 
     public PlanTag(String title) {

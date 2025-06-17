@@ -6,6 +6,6 @@ import org.upc.fitwise.profiles.interfaces.rest.resources.ActivityLevelResource;
 
 public class ActivityLevelResourceFromEntityAssembler {
     public static ActivityLevelResource toResourceFromEntity(ActivityLevel entity) {
-        return new ActivityLevelResource(entity.getId(), entity.getLevelName(), entity.getScore());
+        return new ActivityLevelResource(entity.getId(), entity.getLevelName(), entity.getScore(),entity.getTagNamesActivityLevel());
     }
 }

@@ -6,6 +6,9 @@ import org.upc.fitwise.profiles.domain.model.queries.GetProfileByUserIdQuery;
 import org.upc.fitwise.profiles.domain.services.ProfileCommandService;
 import org.upc.fitwise.profiles.domain.services.ProfileQueryService;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Service Facade for the Profile context.
  *
@@ -29,11 +32,13 @@ public class ProfilesContextFacade {
      * @param profileId the profileId
      * @return the profile activity level name
      */
-    public String fetchProfileActivityLevelNameByProfileId(Long profileId) {
+    public List<String> fetchProfileActivityLevelTagsByProfileId(Long profileId) {
         var getProfileByIdQuery = new GetProfileByIdQuery(profileId);
         var profile = profileQueryService.handle(getProfileByIdQuery);
-        if (profile.isEmpty()) return "";
-        return profile.get().getActivityLevel().getLevelName();
+        if (profile.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return profile.get().getActivityLevel().getTagNamesActivityLevel();
     }
     /**
      * Fetches the name of goal  of profile  by profileId
@@ -41,12 +46,17 @@ public class ProfilesContextFacade {
      * @param profileId the profileId
      * @return the profile goal name
      */
-    public String fetchProfileGoalNameByProfileId(Long profileId) {
+    public List<String> fetchProfileGoalTagsByProfileId(Long profileId) {
         var getProfileByIdQuery = new GetProfileByIdQuery(profileId);
         var profile = profileQueryService.handle(getProfileByIdQuery);
-        if (profile.isEmpty()) return "";
-        return profile.get().getGoal().getGoalName();
+        if (profile.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return profile.get().getGoal().getTagNamesGoal();
     }
+
+
+
 
 
 }

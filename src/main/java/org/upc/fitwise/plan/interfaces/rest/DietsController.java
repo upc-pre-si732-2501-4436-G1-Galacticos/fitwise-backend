@@ -1,19 +1,22 @@
 package org.upc.fitwise.plan.interfaces.rest;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 import org.upc.fitwise.plan.domain.model.queries.GetAllDietsQuery;
 import org.upc.fitwise.plan.domain.model.queries.GetDietByIdQuery;
-import org.upc.fitwise.plan.domain.model.queries.GetWorkoutByIdQuery;
+import org.upc.fitwise.plan.domain.services.DietCommandService;
 import org.upc.fitwise.plan.domain.services.DietQueryService;
+import org.upc.fitwise.plan.interfaces.rest.resources.CreateDietResource;
+import org.upc.fitwise.plan.interfaces.rest.resources.UpdateDietResource;
 import org.upc.fitwise.plan.interfaces.rest.resources.DietResource;
-import org.upc.fitwise.plan.interfaces.rest.resources.WorkoutResource;
+import org.upc.fitwise.plan.interfaces.rest.transform.CreateDietCommandFromResourceAssembler;
+import org.upc.fitwise.plan.interfaces.rest.transform.UpdateDietCommandFromResourceAssembler;
 import org.upc.fitwise.plan.interfaces.rest.transform.DietResourceFromEntityAssembler;
-import org.upc.fitwise.plan.interfaces.rest.transform.WorkoutResourceFromEntityAssembler;
+
 
 import java.util.List;
 
@@ -34,16 +37,17 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
  */
 @RestController
 @RequestMapping(value = "/api/v1/diets", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Diets ", description = "Diets Management Endpoints")
+@Tag(name = "Diets", description = "Diets Management Endpoints")
 public class DietsController {
     private final DietQueryService dietQueryService;
+    private final DietCommandService dietCommandService;
 
 
 
-    public DietsController(DietQueryService dietQueryService) {
+    public DietsController(DietQueryService dietQueryService,DietCommandService dietCommandService) {
         this.dietQueryService = dietQueryService;
+        this.dietCommandService=dietCommandService;
     }
-
 
     /**
      * Gets all the diets.
@@ -59,7 +63,6 @@ public class DietsController {
         return ResponseEntity.ok(dietResource);
     }
 
-
     /**
      * Gets a diet by its id.
      *
@@ -73,6 +76,51 @@ public class DietsController {
         var diet = dietQueryService.handle(getDietByIdQuery);
         if (diet.isEmpty()) return ResponseEntity.badRequest().build();
         var dietResource = DietResourceFromEntityAssembler.toResourceFromEntity(diet.get());
+        return ResponseEntity.ok(dietResource);
+    }
+
+
+    /**
+     * Creates a new diet.
+     *
+     * @param createDietResource the resource containing the data for the diet to be created
+     * @return the created diet resource
+     * @see CreateDietResource
+     * @see DietResource
+     */
+    @PostMapping
+    public ResponseEntity<DietResource> createDiet(@RequestBody CreateDietResource createDietResource, @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        var createDietCommand = CreateDietCommandFromResourceAssembler.toCommandFromResource(createDietResource,username);
+        var dietId = dietCommandService.handle(createDietCommand);
+        if (dietId == 0L) {
+            return ResponseEntity.badRequest().build();
+        }
+        var getDietByIdQuery = new GetDietByIdQuery(dietId);
+        var diet = dietQueryService.handle(getDietByIdQuery);
+        if (diet.isEmpty()) return ResponseEntity.badRequest().build();
+        var DietResource = DietResourceFromEntityAssembler.toResourceFromEntity(diet.get());
+        return new ResponseEntity<>(DietResource, HttpStatus.CREATED);
+    }
+
+    /**
+     * Updates a diet.
+     *
+     * @param dietId the id of the diet to be updated
+     * @param updateDietResource the resource containing the data for the Diet to be updated
+     * @return the updated Diet resource
+     * @see UpdateDietResource
+     * @see DietResource
+     */
+    @PutMapping("/{dietId}")
+    public ResponseEntity<DietResource> updateDiet(@PathVariable Long dietId, @RequestBody UpdateDietResource updateDietResource, @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        var updateDietCommand = UpdateDietCommandFromResourceAssembler.toCommandFromResource(dietId, updateDietResource,username);
+        var updatedDiet = dietCommandService.handle(updateDietCommand);
+        if (updatedDiet.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        var dietResource = DietResourceFromEntityAssembler.toResourceFromEntity(updatedDiet.get());
         return ResponseEntity.ok(dietResource);
     }
 

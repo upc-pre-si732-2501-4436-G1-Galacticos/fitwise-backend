@@ -2,7 +2,11 @@ package org.upc.fitwise.plan.application.internal.outboundservices.acl;
 
 
 import org.springframework.stereotype.Service;
+import org.upc.fitwise.profiles.domain.model.queries.GetProfileByIdQuery;
 import org.upc.fitwise.profiles.interfaces.acl.ProfilesContextFacade;
+
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -29,11 +33,13 @@ public class ExternalProfileService {
      * @param profileId the userId to search for
      * @return profileActivityLevelName if found, empty otherwise
      */
-    public String fetchProfileActivityLevelNameByProfileId(Long profileId) {
-        var profileActivityLevelName= profilesContextFacade.fetchProfileActivityLevelNameByProfileId(profileId);
-        if (profileActivityLevelName.isEmpty()) return "";
-        return profileActivityLevelName;
+    public List<String> fetchProfileActivityLevelTagsByProfileId(Long profileId) {
+        var profileActivityLevelTagsByProfileId= profilesContextFacade.fetchProfileActivityLevelTagsByProfileId(profileId);
+        if (profileActivityLevelTagsByProfileId.isEmpty()) return Collections.emptyList();
+        return profileActivityLevelTagsByProfileId;
     }
+
+
 
     /**
      * Fetch fetchProfileGoalNameByUserId by profileId
@@ -41,10 +47,10 @@ public class ExternalProfileService {
      * @param profileId the profile to search for
      * @return profileGoalName if found, empty otherwise
      */
-    public String fetchProfileGoalNameByProfileId(Long profileId) {
-        var profileGoalName= profilesContextFacade.fetchProfileGoalNameByProfileId(profileId);
-        if (profileGoalName.isEmpty()) return "";
-        return profileGoalName;
+    public List<String> fetchProfileGoalTagsByProfileId(Long profileId) {
+        var profileGoalTagsByProfileId= profilesContextFacade.fetchProfileGoalTagsByProfileId(profileId);
+        if (profileGoalTagsByProfileId.isEmpty()) return Collections.emptyList();
+        return profileGoalTagsByProfileId;
     }
 
 }

@@ -1,5 +1,6 @@
 package org.upc.fitwise.iam.interfaces.acl;
 
+import org.springframework.stereotype.Service;
 import org.upc.fitwise.iam.domain.model.commands.SignUpCommand;
 import org.upc.fitwise.iam.domain.model.queries.GetUserByIdQuery;
 import org.upc.fitwise.iam.domain.model.queries.GetUserByEmailQuery;
@@ -19,6 +20,7 @@ import java.util.List;
  * </p>
  *
  */
+@Service
 public class IamContextFacade {
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;

@@ -10,7 +10,6 @@ import org.upc.fitwise.shared.domain.model.aggregates.AuditableAbstractAggregate
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Entity
@@ -30,26 +29,34 @@ public class Workout extends AuditableAbstractAggregateRoot<Workout> {
     )
     private List<Exercise> exercises;
 
+    @Getter
+    private Long userId;
+
     public Workout() {
         this.exercises = new ArrayList<>();
     }
-    public Workout(String title, String description) {
+    public Workout(String title, String description,Long userId) {
         this.title = title;
         this.description = description;
         this.exercises = new ArrayList<>();
+        this.userId = userId;
+    }
+
+    public Workout updateInformation(String title, String description) {
+        this.title = title;
+        this.description = description;
+        return this;
     }
 
 
-
-
-    public void addExercise(Exercise exercise) {
+    public void addExerciseToWorkout(Exercise exercise) {
 
         if (!this.exercises.contains(exercise)) {
             this.exercises.add(exercise);
         }
     }
 
-    public void removeExercise(Exercise exercise) {
+    public void removeExerciseToWorkout(Exercise exercise) {
         if (this.exercises != null) {
             this.exercises.remove(exercise);
         }

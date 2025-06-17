@@ -1,12 +1,9 @@
 package org.upc.fitwise.plan.application.internal.queryservices;
 
 import org.springframework.stereotype.Service;
-import org.upc.fitwise.plan.domain.model.aggregates.FitwisePlan;
 import org.upc.fitwise.plan.domain.model.aggregates.Workout;
 import org.upc.fitwise.plan.domain.model.queries.*;
-import org.upc.fitwise.plan.domain.services.FitwisePlanQueryService;
 import org.upc.fitwise.plan.domain.services.WorkoutQueryService;
-import org.upc.fitwise.plan.infrastructure.persistence.jpa.repositories.FitwisePlanRepository;
 import org.upc.fitwise.plan.infrastructure.persistence.jpa.repositories.WorkoutRepository;
 
 import java.util.List;
@@ -29,6 +26,11 @@ public class WorkoutQueryServiceImpl implements WorkoutQueryService {
     @Override
     public Optional<Workout> handle(GetWorkoutByIdQuery query) {
         return workoutRepository.findById(query.workoutId());
+    }
+
+    @Override
+    public List<Workout> handle(GetAllWorkoutsByUserIdQuery query) {
+        return workoutRepository.findAllByUserId(query.userId());
     }
 
 }

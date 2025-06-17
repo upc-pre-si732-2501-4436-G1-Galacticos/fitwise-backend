@@ -7,6 +7,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.Setter;
+import org.upc.fitwise.iam.domain.exceptions.InvalidVerificationCodeException;
+import org.upc.fitwise.iam.domain.exceptions.VerificationCodeAlreadyUsedException;
+import org.upc.fitwise.iam.domain.exceptions.VerificationCodeExpiredException;
 import org.upc.fitwise.iam.domain.model.valueobjects.Code;
 import org.upc.fitwise.iam.domain.model.valueobjects.VerificationType;
 import org.upc.fitwise.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
@@ -32,6 +36,7 @@ public class EmailVerification extends AuditableAbstractAggregateRoot<EmailVerif
 
     private LocalDateTime expirationDate;
 
+    @Setter
     private  Boolean verified;
 
     public EmailVerification() {
@@ -50,18 +55,8 @@ public class EmailVerification extends AuditableAbstractAggregateRoot<EmailVerif
         return LocalDateTime.now().isAfter(expirationDate);
     }
 
-    public void validateOrThrow(Code verificationCode) {
-        if(isVerified()){
-            throw new RuntimeException("Token already verified");
-        }
-        if (isExpired()) {
-            throw new RuntimeException("Token expired");
-        }
-
-        if (!this.verificationCode.equals(verificationCode)) {
-            throw new RuntimeException("Invalid token");
-        }
-        this.verified = true;
+    public boolean isCodeInvalid(Code verificationCode){
+        return !verificationCode.equals(verificationCode);
     }
     public void expireNow(){
         this.expirationDate = LocalDateTime.now();
@@ -70,7 +65,6 @@ public class EmailVerification extends AuditableAbstractAggregateRoot<EmailVerif
     public boolean isVerified() {
         return verified;
     }
-
 
 }
 

@@ -2,9 +2,10 @@ package org.upc.fitwise.plan.application.internal.queryservices;
 
 import org.springframework.stereotype.Service;
 import org.upc.fitwise.plan.domain.model.aggregates.Diet;
-import org.upc.fitwise.plan.domain.model.queries.GetAllDietsQuery;
-import org.upc.fitwise.plan.domain.model.queries.GetDietByIdQuery;
+import org.upc.fitwise.plan.domain.model.aggregates.Diet;
+import org.upc.fitwise.plan.domain.model.queries.*;
 import org.upc.fitwise.plan.domain.services.DietQueryService;
+import org.upc.fitwise.plan.infrastructure.persistence.jpa.repositories.DietRepository;
 import org.upc.fitwise.plan.infrastructure.persistence.jpa.repositories.DietRepository;
 
 
@@ -30,5 +31,9 @@ public class DietQueryServiceImpl implements DietQueryService {
         return dietRepository.findById(query.dietId());
     }
 
+    @Override
+    public List<Diet> handle(GetAllDietsByUserIdQuery query) {
+        return dietRepository.findAllByUserId(query.userId());
+    }
 
 }
