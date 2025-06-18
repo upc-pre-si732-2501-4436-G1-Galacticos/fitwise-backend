@@ -2,6 +2,7 @@ package org.upc.fitwise.iam.domain.model.valueobjects;
 
 
 import jakarta.persistence.Embeddable;
+import org.upc.fitwise.iam.domain.exceptions.InvalidVerificationCodeException;
 
 import java.security.SecureRandom;
 
@@ -12,8 +13,8 @@ public record Code(String verificationCode) {
     private static final SecureRandom random = new SecureRandom();
 
     public Code {
-        if (verificationCode == null || !verificationCode.matches("[A-Z0-9]{" + LENGTH + "}")) {
-            throw new IllegalArgumentException("Invalid code: " + verificationCode);
+        if (verificationCode == null || verificationCode.trim().isEmpty()) {
+            throw new InvalidVerificationCodeException();
         }
     }
 

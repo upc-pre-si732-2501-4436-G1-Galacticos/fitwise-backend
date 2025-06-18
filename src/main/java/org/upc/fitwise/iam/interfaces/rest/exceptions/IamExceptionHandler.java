@@ -1,74 +1,118 @@
 package org.upc.fitwise.iam.interfaces.rest.exceptions;
 
-import jakarta.validation.ConstraintViolationException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
+import org.upc.fitwise.iam.domain.exceptions.InvalidCredentialsException;
+import org.upc.fitwise.iam.domain.exceptions.InvalidVerificationCodeException;
+import org.upc.fitwise.iam.domain.exceptions.UserAlreadyExistsException;
+import org.upc.fitwise.iam.domain.exceptions.UserNotFoundException;
+import org.upc.fitwise.iam.domain.exceptions.VerificationCodeAlreadyActiveException;
+import org.upc.fitwise.iam.domain.exceptions.VerificationCodeAlreadyUsedException; // Nueva importación
+import org.upc.fitwise.iam.domain.exceptions.VerificationCodeExpiredException;   // Nueva importación
+import org.upc.fitwise.shared.interfaces.rest.resources.MessageResource; // Asegúrate de que la ruta a MessageResource sea correcta
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-@RestControllerAdvice(basePackages = "org.upc.fitwise.iam")
+/**
+ * Global exception handler for the 'iam' (Identity and Access Management) bounded context.
+ * This class catches specific exceptions thrown by the IAM application and domain layers
+ * and maps them to appropriate HTTP status codes and a standardized error response body.
+ */
+@RestControllerAdvice
 public class IamExceptionHandler {
 
-    // ⚠️ Validación de @Valid fallida en el body del request
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationErrors(MethodArgumentNotValidException ex) {
-        var errors = ex.getBindingResult().getFieldErrors()
-                .stream()
-                .collect(Collectors.toMap(
-                        err -> err.getField(),
-                        err -> err.getDefaultMessage(),
-                        (msg1, msg2) -> msg1 + "; " + msg2 // en caso de conflictos
-                ));
-        return new ResponseEntity<>(buildResponse("Validation failed", errors), HttpStatus.BAD_REQUEST);
+    /**
+     * Handles UserAlreadyExistsException and returns HTTP 409 Conflict.
+     * Used when trying to sign up with an email that is already registered.
+     *
+     * @param ex The exception thrown.
+     * @return A MessageResource containing the error message.
+     */
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public MessageResource handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        return new MessageResource(ex.getMessage());
     }
 
-    // ⚠️ Validación fallida de constraints tipo @Email, @NotNull en entidades
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
-        var errors = ex.getConstraintViolations()
-                .stream()
-                .collect(Collectors.toMap(
-                        err -> err.getPropertyPath().toString(),
-                        err -> err.getMessage(),
-                        (msg1, msg2) -> msg1 + "; " + msg2
-                ));
-
-        return new ResponseEntity<>(buildResponse("Constraint violation", errors), HttpStatus.BAD_REQUEST);
+    /**
+     * Handles UserNotFoundException and returns HTTP 404 Not Found.
+     * Used when a requested user resource does not exist.
+     *
+     * @param ex The exception thrown.
+     * @return A MessageResource containing the error message.
+     */
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public MessageResource handleUserNotFoundException(UserNotFoundException ex) {
+        return new MessageResource(ex.getMessage());
     }
 
-    // ⚠️ JSON mal formado, campos incorrectos, etc.
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Object> handleInvalidJson(HttpMessageNotReadableException ex, WebRequest request) {
-        return new ResponseEntity<>(
-                buildResponse("Malformed JSON", Map.of("error", ex.getLocalizedMessage())),
-                new HttpHeaders(),
-                HttpStatus.BAD_REQUEST
-        );
+    /**
+     * Handles InvalidCredentialsException and returns HTTP 401 Unauthorized.
+     * Used for failed login attempts due to incorrect email/password.
+     *
+     * @param ex The exception thrown.
+     * @return A MessageResource containing the error message.
+     */
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public MessageResource handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        return new MessageResource(ex.getMessage());
     }
 
-    // ⚠️ Manejo genérico para cualquier excepción no controlada
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGenericException(Exception ex) {
-        return new ResponseEntity<>(
-                buildResponse("Internal error", Map.of("error", ex.getMessage())),
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
+    /**
+     * Handles VerificationCodeAlreadyActiveException and returns HTTP 409 Conflict or 400 Bad Request.
+     * Used when a new verification code is requested but one is already active.
+     *
+     * @param ex The exception thrown.
+     * @return A MessageResource containing the error message.
+     */
+    @ExceptionHandler(VerificationCodeAlreadyActiveException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public MessageResource handleVerificationCodeAlreadyActiveException(VerificationCodeAlreadyActiveException ex) {
+        return new MessageResource(ex.getMessage());
+    }
+
+    /**
+     * Handles InvalidVerificationCodeException and returns HTTP 400 Bad Request.
+     * Used when a provided verification code is incorrect or expired.
+     *
+     * @param ex The exception thrown.
+     * @return A MessageResource containing the error message.
+     */
+    @ExceptionHandler(InvalidVerificationCodeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public MessageResource handleInvalidVerificationCodeException(InvalidVerificationCodeException ex) {
+        return new MessageResource(ex.getMessage());
+    }
+
+    /**
+     * Handles VerificationCodeAlreadyUsedException and returns HTTP 400 Bad Request or 410 Gone.
+     * Used when a verification code has already been successfully consumed.
+     *
+     * @param ex The exception thrown.
+     * @return A MessageResource containing the error message.
+     */
+    @ExceptionHandler(VerificationCodeAlreadyUsedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public MessageResource handleVerificationCodeAlreadyUsedException(VerificationCodeAlreadyUsedException ex) {
+        return new MessageResource(ex.getMessage());
+    }
+
+    /**
+     * Handles VerificationCodeExpiredException and returns HTTP 400 Bad Request.
+     * Used when a verification code has passed its expiration time.
+     *
+     * @param ex The exception thrown.
+     * @return A MessageResource containing the error message.
+     */
+    @ExceptionHandler(VerificationCodeExpiredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public MessageResource handleVerificationCodeExpiredException(VerificationCodeExpiredException ex) {
+        return new MessageResource(ex.getMessage());
     }
 
 
-    private Map<String, Object> buildResponse(String message, Map<String, String> errors) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", message);
-        response.put("errors", errors);
-        return response;
-    }
+
+
 }
