@@ -83,4 +83,9 @@ public class IamContextFacade {
         return result.get().getEmail();
     }
 
+    public boolean existsUserById(Long userId) {
+        var getUserByIdQuery = new GetUserByIdQuery(userId);
+        return userQueryService.handle(getUserByIdQuery).isPresent();
+    }
+
 }
