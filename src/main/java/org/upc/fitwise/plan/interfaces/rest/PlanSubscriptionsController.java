@@ -49,7 +49,6 @@ public class PlanSubscriptionsController {
     public ResponseEntity<List<PlanSubscriptionResource>> getPlanSubscriptionsByUserId(@PathVariable Long userId) {
         var getPlanSubscriptionsByUserIdQuery = new GetPlanSubscriptionsByUserIdQuery(userId);
         var planSubscriptions = planSubscriptionQueryService.handle(getPlanSubscriptionsByUserIdQuery);
-        if (planSubscriptions.isEmpty()) return ResponseEntity.notFound().build();
         var planSubscriptionResource = planSubscriptions.stream().map(PlanSubscriptionResourceFromEntityAssembler::toResourceFromEntity).toList();
         return ResponseEntity.ok(planSubscriptionResource);
     }
