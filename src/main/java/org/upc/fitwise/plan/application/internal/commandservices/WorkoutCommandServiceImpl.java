@@ -31,15 +31,11 @@ public class WorkoutCommandServiceImpl implements WorkoutCommandService {
 
     @Override
     public void handle(AddExerciseToWorkoutCommand command) {
-        Long userId = externalIamService.fetchUserIdByEmail(command.username())
-                .orElseThrow(() -> new UnauthorizedWorkoutAccessException("User not found or unauthorized for this operation."));
 
         Workout workout = workoutRepository.findById(command.workoutId())
                 .orElseThrow(() -> new WorkoutNotFoundException(command.workoutId()));
 
-        if (!userId.equals(workout.getUserId())) {
-            throw new UnauthorizedWorkoutAccessException("Add not permitted: Workout belongs to a different user");
-        }
+
         Exercise exerciseToAdd  = exerciseRepository.findById(command.exerciseId())
                 .orElseThrow(() -> new ExerciseNotFoundException(command.exerciseId()));
 
@@ -56,15 +52,10 @@ public class WorkoutCommandServiceImpl implements WorkoutCommandService {
 
     @Override
     public void handle(RemoveExerciseToWorkoutCommand command) {
-        Long userId = externalIamService.fetchUserIdByEmail(command.username())
-                .orElseThrow(() -> new UnauthorizedWorkoutAccessException("User not found or unauthorized for this operation."));
 
         Workout workout = workoutRepository.findById(command.workoutId())
                 .orElseThrow(() -> new WorkoutNotFoundException(command.workoutId()));
 
-        if (!userId.equals(workout.getUserId())) {
-            throw new UnauthorizedWorkoutAccessException("Remove not permitted: Workout belongs to a different user");
-        }
         Exercise exerciseToRemove  = exerciseRepository.findById(command.exerciseId())
                 .orElseThrow(() -> new ExerciseNotFoundException(command.exerciseId()));
 
