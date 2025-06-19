@@ -22,11 +22,6 @@ public class PlanSubscription extends AuditableAbstractAggregateRoot<PlanSubscri
     @JoinColumn(name = "fitwise_plan_id", nullable = false)
     private FitwisePlan fitwisePlan;
 
-    @Getter
-    private Integer currentWorkoutId;
-
-    @Getter
-    private Integer currentDietId;
 
     @Getter
     @Column(nullable = false)
