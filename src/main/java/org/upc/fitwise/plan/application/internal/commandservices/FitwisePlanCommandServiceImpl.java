@@ -73,15 +73,11 @@ public class FitwisePlanCommandServiceImpl implements FitwisePlanCommandService 
 
     @Override
     public void handle(AddWorkoutToFitwisePlanCommand command) {
-        Long userId = externalIamService.fetchUserIdByEmail(command.username())
-                .orElseThrow(() -> new UnauthorizedPlanAccessException("User not found or unauthorized for this operation."));
 
         FitwisePlan fitwisePlan = fitwisePlanRepository.findById(command.fitwisePlanId())
                 .orElseThrow(() -> new FitwisePlanNotFoundException(command.fitwisePlanId()));
 
-        if (!userId.equals(fitwisePlan.getUserId())) {
-            throw new UnauthorizedPlanAccessException("Add not permitted: Fitwise Plan belongs to a different user");
-        }
+
         Workout workoutToAdd  = workoutRepository.findById(command.workoutId())
                 .orElseThrow(() -> new WorkoutNotFoundException(command.workoutId()));
 
