@@ -119,14 +119,10 @@ public class FitwisePlanCommandServiceImpl implements FitwisePlanCommandService 
 
     @Override
     public void handle(AddDietToFitwisePlanCommand command) {
-        Long userId = externalIamService.fetchUserIdByEmail(command.username())
-                .orElseThrow(() -> new UnauthorizedPlanAccessException("User not found or unauthorized for this operation."));
 
         FitwisePlan fitwisePlan = fitwisePlanRepository.findById(command.fitwisePlanId())
                 .orElseThrow(() -> new FitwisePlanNotFoundException(command.fitwisePlanId()));
-        if (!userId.equals(fitwisePlan.getUserId())) {
-            throw new UnauthorizedPlanAccessException("Add not permitted: Fitwise Plan belongs to a different user");
-        }
+
         Diet dietToAdd  = dietRepository.findById(command.dietId())
                 .orElseThrow(() -> new DietNotFoundException(command.dietId()));
 
@@ -142,14 +138,10 @@ public class FitwisePlanCommandServiceImpl implements FitwisePlanCommandService 
 
     @Override
     public void handle(RemoveDietToFitwisePlanCommand command) {
-        Long userId = externalIamService.fetchUserIdByEmail(command.username())
-                .orElseThrow(() -> new UnauthorizedPlanAccessException("User not found or unauthorized for this operation."));
 
         FitwisePlan fitwisePlan = fitwisePlanRepository.findById(command.fitwisePlanId())
                 .orElseThrow(() -> new FitwisePlanNotFoundException(command.fitwisePlanId()));
-        if (!userId.equals(fitwisePlan.getUserId())) {
-            throw new UnauthorizedPlanAccessException("Remove not permitted: Fitwise Plan belongs to a different user");
-        }
+
         Diet dietToRemove  = dietRepository.findById(command.dietId())
                 .orElseThrow(() -> new DietNotFoundException(command.dietId()));
 

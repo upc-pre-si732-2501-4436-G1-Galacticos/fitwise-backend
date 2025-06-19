@@ -31,15 +31,11 @@ public class DietCommandServiceImpl implements DietCommandService {
 
     @Override
     public void handle(AddMealToDietCommand command) {
-        Long userId = externalIamService.fetchUserIdByEmail(command.username())
-                .orElseThrow(() -> new UnauthorizedDietAccessException("User not found or unauthorized for this operation."));
 
         Diet diet = dietRepository.findById(command.dietId())
                 .orElseThrow(() -> new DietNotFoundException(command.dietId()));
 
-        if (!userId.equals(diet.getUserId())) {
-            throw new UnauthorizedDietAccessException("Add not permitted: Diet belongs to a different user");
-        }
+
         Meal mealToAdd  = mealRepository.findById(command.mealId())
                 .orElseThrow(() -> new MealNotFoundException(command.mealId()));
 
@@ -55,15 +51,11 @@ public class DietCommandServiceImpl implements DietCommandService {
 
     @Override
     public void handle(RemoveMealToDietCommand command) {
-        Long userId = externalIamService.fetchUserIdByEmail(command.username())
-                .orElseThrow(() -> new UnauthorizedDietAccessException("User not found or unauthorized for this operation."));
 
         Diet diet = dietRepository.findById(command.dietId())
                 .orElseThrow(() -> new DietNotFoundException(command.dietId()));
 
-        if (!userId.equals(diet.getUserId())) {
-            throw new UnauthorizedDietAccessException("Remove not permitted: Diet belongs to a different user");
-        }
+
         Meal mealToRemove  = mealRepository.findById(command.mealId())
                 .orElseThrow(() -> new MealNotFoundException(command.mealId()));
 
